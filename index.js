@@ -11,6 +11,8 @@ const connection = mysql.createConnection({
     database: 'tracker_db'
 });
 
+// Arrays for 
+
 // Initial prompt questions
 const start = () => {
     inquirer
@@ -22,9 +24,25 @@ const start = () => {
                 choices: ['View all departments', 'View all roles', 'View all employees', 'Add a department', 'Add a role', 'Add an employee', 'Update an employee']
             }
         ])
+        .then((response) => {
+            switch (response.start) {
+                case 'View all departments':
+                    viewDep();
+                    break;
+                case 'View all roles':
+                    viewRoles();
+                    break;
+                case 'View all employees':
+                    viewEmps();
+                    break;
+            }
+        })
 }
 
+start();
 
+
+// Displays department table
 const viewDep = () => {
     connection 
         .query('SELECT * FROM department', function(err, results) {
@@ -38,6 +56,7 @@ const viewDep = () => {
         })
 }
 
+// Displays roles table
 const viewRoles = () => {
     connection 
         .query('SELECT * FROM role', function(err, results) {
@@ -51,6 +70,7 @@ const viewRoles = () => {
         })
 }
 
+// Displays employee table
 const viewEmps = () => {
     connection 
         .query('SELECT * FROM employee', function(err, results) {
