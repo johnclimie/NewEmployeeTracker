@@ -38,5 +38,29 @@ const viewDep = () => {
         })
 }
 
+const viewRoles = () => {
+    connection 
+        .query('SELECT * FROM role', function(err, results) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.table(results);
+                console.log('\n')
+                start();
+            }
+        })
+}
 
-viewDep();
+const viewEmps = () => {
+    connection 
+        .query('SELECT * FROM employee', function(err, results) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.table(results);
+                console.log('\n')
+                start();
+            }
+        })
+}
+
