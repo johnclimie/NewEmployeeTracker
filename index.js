@@ -11,8 +11,6 @@ const connection = mysql.createConnection({
     database: 'tracker_db'
 });
 
-// Arrays for 
-
 // Initial prompt questions
 const start = () => {
     inquirer
@@ -39,48 +37,87 @@ const start = () => {
         })
 }
 
-start();
+// Invokes starter prompt
+// start();
 
+// Display functions
 
-// Displays department table
-const viewDep = () => {
-    connection 
-        .query('SELECT * FROM department', function(err, results) {
+    // Displays department table
+    const viewDep = () => {
+        connection 
+            .query('SELECT * FROM department', function(err, results) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.table(results);
+                    console.log('\n')
+                    start();
+                }
+            })
+    }
+
+    // Displays roles table
+    const viewRoles = () => {
+        connection 
+            .query('SELECT * FROM role', function(err, results) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.table(results);
+                    console.log('\n')
+                    start();
+                }
+            })
+    }
+
+    // Displays employee table
+    const viewEmps = () => {
+        connection 
+            .query('SELECT * FROM employee', function(err, results) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.table(results);
+                    console.log('\n')
+                    start();
+                }
+            })
+    }
+
+// Creates arrays with table data
+
+    let departmentArr = [];
+    let roleArr = [];
+    let managerArr = [];
+
+    // Adds all departments to an array
+    connection
+        .query('SELECT name FROM department', function(err, results) {
             if (err) {
                 console.log(err);
             } else {
-                console.table(results);
-                console.log('\n')
-                start();
+                results.forEach(department => departmentArr.push(department.name))
             }
-        })
-}
-
-// Displays roles table
-const viewRoles = () => {
-    connection 
-        .query('SELECT * FROM role', function(err, results) {
+        });
+    
+    //Adds all roles to an array
+    connection
+        .query('SELECT title FROM role', function(err, results) {
             if (err) {
                 console.log(err);
             } else {
-                console.table(results);
-                console.log('\n')
-                start();
+                results.forEach(role => roleArr.push(role.title))
+                console.log(roleArr);
             }
         })
-}
-
-// Displays employee table
-const viewEmps = () => {
+        
     connection 
-        .query('SELECT * FROM employee', function(err, results) {
+        .query(`SELECT first_name, last_name FROM employee WHERE manager_id IS NULL`, function(err, results) {
             if (err) {
                 console.log(err);
             } else {
-                console.table(results);
-                console.log('\n')
-                start();
+                results.forEach(names => managerArr.push(`${names.first_name} ${names.last_name}`));
             }
         })
-}
+
 
