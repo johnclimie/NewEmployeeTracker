@@ -107,7 +107,6 @@ const start = () => {
                 console.log(err);
             } else {
                 results.forEach(role => roleArr.push(role.title))
-                console.log(roleArr);
             }
         })
         
@@ -120,4 +119,26 @@ const start = () => {
             }
         })
 
+// Add Functions
+
+    const addDep = () => {
+        inquirer
+            .prompt([
+                {
+                    name:'depName',
+                    message: 'What is the name of the department you are adding?',
+                    type: 'input'
+                }
+            ])
+            .then((response) => {
+                connection
+                    .query(`INSERT INTO department (name) VALUES ("${response.depName}")`, function(err, results) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log('success');
+                        }
+                    })
+            })
+    }
 
