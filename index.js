@@ -116,11 +116,13 @@ const start = () => {
                 console.log(err);
             } else {
                 results.forEach(names => managerArr.push(`${names.first_name} ${names.last_name}`));
+                managerArr.push("No manager");
             }
         })
 
 // Add Functions
 
+    // Adds new department
     const addDep = () => {
         inquirer
             .prompt([
@@ -136,9 +138,123 @@ const start = () => {
                         if (err) {
                             console.log(err);
                         } else {
-                            console.log('success');
+                            console.log('Success');
                         }
                     })
             })
     }
+
+    // Adds new role
+    const addRole = () => {
+        inquirer
+            .prompt([
+                {
+                    name:'roleName',
+                    message: 'What is the name of the role you are adding?',
+                    type: 'input'
+                },
+                {
+                    name: 'roleSalary',
+                    message: 'What is this roles salary?',
+                    type: 'input'
+                },
+                {
+                    name: 'roleDepartment',
+                    message: `What is this role's department?`,
+                    type: 'list',
+                    choices: departmentArr
+                }
+
+            ])
+            .then((response) => {
+                connection
+                    .query('SELECT * FROM department', function(err, results) {
+                        let depId;
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            for (i = 0; i < results.length; i++) {
+                                if (response.roleDepartment === results[i].name) {
+                                    depId = results[i].id;
+                                }
+                            };
+
+                            connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${response.roleName}", ${response.roleSalary}, ${depId})`, function(err, results) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log('Success');
+                                }
+                            })
+                        }
+                    })
+            })
+    }
+
+
+    const addEmp = () => {
+        inquirer
+            .prompt([
+                {
+                    name:'empfName',
+                    message:'What is the first name of this employee?',
+                    type: 'input'
+                },
+                {
+                    name:'emplName',
+                    message:'What is the last name of this employee?',
+                    type: 'input',  
+                },
+                {
+                    name:'empRole',
+                    message: 'What is the role of this employee?',
+                    type:'list',
+                    choices: roleArr
+                },
+                {
+                    name:'empManager',
+                    message:`Who is this employee's manager?`,
+                    type:'list',
+                    choices: managerArr
+                }
+            ])
+            .then((response) => {
+                connection
+                    .query('SELECT * FROM role', function(err, results) {
+                        let roleId;
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            for (i = 0; i < results.length; i++) {
+                                if (response.empRole === results[i].title) {
+                                    roleId = results[i].id;
+                                }
+                            }
+                            connection
+                                .query('SELECT * FROM employee WHERE manager_id IS NULL', function(err, results) {
+                                    let managerId;
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        if (response.empManager === "No manager") {
+                                            console.log("Noo Manager");
+                                        } else {
+                                            for (var i = 0; i < results.length; i++) {
+                                                if (response.empManager === `${results[i].first_name} ${results[i].last_name}`) {
+                                                    managerId = results[i].id;
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                        }
+                    })
+            })
+    }
+
+
+    addEmp();
+
+
+
 
