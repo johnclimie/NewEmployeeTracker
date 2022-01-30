@@ -83,7 +83,7 @@ const start = () => {
     // Displays employee table
     const viewEmps = () => {
         connection 
-            .query('SELECT * FROM employee', function(err, results) {
+            .query('SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, department.name AS department, role.salary, employee.manager_id FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id', function(err, results) {
                 if (err) {
                     console.log(err);
                 } else {
@@ -98,7 +98,6 @@ const start = () => {
 
     let departmentArr = [];
     let roleArr = [];
-    // let empArr = [];
     let managerArr = [];
 
     // Adds all departments to an array
@@ -111,7 +110,7 @@ const start = () => {
             }
         });
     
-    //Adds all roles to an array
+    // Adds all roles to an array
     connection
         .query('SELECT title FROM role', function(err, results) {
             if (err) {
@@ -120,16 +119,8 @@ const start = () => {
                 results.forEach(role => roleArr.push(role.title))
             }
         })
-
-    // connection
-    //     .query('SELECT * FROM employee', function(err, results) {
-    //         if(err) {
-    //             console.log(err);
-    //         } else {
-    //             results.forEach(names => empArr.push(`"${names.first_name} ${names.last_name}"`));
-    //         }
-    //     })
-        
+    
+    // Adds all managers to an array
     connection 
         .query(`SELECT first_name, last_name FROM employee WHERE manager_id IS NULL`, function(err, results) {
             if (err) {
@@ -144,7 +135,6 @@ const start = () => {
 // Add Functions
 
     // Adds new department
-
 
     const addDep = () => {
         inquirer
