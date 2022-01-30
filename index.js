@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
 
+
 // Creates SQL connection
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -32,6 +33,18 @@ const start = () => {
                     break;
                 case 'View all employees':
                     viewEmps();
+                    break;
+                case 'Add a department':
+                    addDep();
+                    break;
+                case 'Add a role':
+                    addRole();
+                    break;
+                case 'Add an employee':
+                    addEmp();
+                    break;
+                case 'Update an employee':
+                    updateEmp();
                     break;
             }
         })
@@ -85,6 +98,7 @@ const start = () => {
 
     let departmentArr = [];
     let roleArr = [];
+    // let empArr = [];
     let managerArr = [];
 
     // Adds all departments to an array
@@ -106,6 +120,15 @@ const start = () => {
                 results.forEach(role => roleArr.push(role.title))
             }
         })
+
+    // connection
+    //     .query('SELECT * FROM employee', function(err, results) {
+    //         if(err) {
+    //             console.log(err);
+    //         } else {
+    //             results.forEach(names => empArr.push(`"${names.first_name} ${names.last_name}"`));
+    //         }
+    //     })
         
     connection 
         .query(`SELECT first_name, last_name FROM employee WHERE manager_id IS NULL`, function(err, results) {
@@ -117,9 +140,12 @@ const start = () => {
             }
         })
 
+
 // Add Functions
 
     // Adds new department
+
+
     const addDep = () => {
         inquirer
             .prompt([
@@ -264,9 +290,76 @@ const start = () => {
                 })
         }
 
+// Update employee function
+const updateEmp = () => {
+    let empArr = [];
+    connection
+        .query('SELECT * FROM employee', function(err, results) {
+            if(err) {
+                console.log(err);
+            } else {
+                results.forEach(names => empArr.push(`${names.first_name} ${names.last_name}`));
+            }
+
+            inquirer
+                .prompt([
+                    {
+                        name: 'empName',
+                        message: 'Which employee would you like to update?',
+                        type: 'list',
+                        choices: empArr
+                    },
+                    {
+                        name: 'newRole',
+                        message: `What is the employee's new role?`,
+                        type: 'list', 
+                        choices: roleArr
+                    }
+                ])
+                .then((response) => {
+                    connection
+                        .query('SELECT * FROM role', function(err, results) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                let upRole;
+                                for (i = 0; i < results.length; i++) {
+                                    if (results[i].title === response.newRole) {
+                                        upRole = results[i].id;
+                                    }
+                                }
+
+                                connection
+                                    .query('SELECT * FROM employee', function(err, results) {
+                                        if (err) {
+                                            console.log(err);
+                                        } else {
+                                            let upEmp;
+                                            for (i = 0; i < results.length; i++) {
+                                                if (`${results[i].first_name} ${results[i].last_name}` === response.empName) {
+                                                    upEmp = results[i].id;
+                                                }
+                                            }
+
+
+                                            connection
+                                                .query(`UPDATE employee SET role_id = ${upRole} WHERE id = ${upEmp}`, function(err, results) {
+                                                    if (err) {
+                                                        console.log(err);
+                                                    } else {
+                                                        console.log("Success");
+                                                        console.log('\n')
+                                                        start();
+                                                    }
+                                                })
+                                        }
+                                    })
+                            }
+                        })
+                })
+        })
+}
+
 
 // Invokes initial prompt
 start();
-
-
-
