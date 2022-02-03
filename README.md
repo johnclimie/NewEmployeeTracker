@@ -2,7 +2,7 @@
 
 ## Description
 
-In this project, I created an employee tracker froms scratch. This project takes user input from the user with the CLI. This input is stored into a SQL Database.
+In this project, I created an employee tracker from scratch. This project takes user input from the user with the CLI. This input is stored into a SQL Database.
 
 The user is prompted with options to view all departments, view all roles, view all employees, add a department, add a role, add an employee, and finally, they can update an employee by updating their role. The prompt goes as long as the user desires.
 
